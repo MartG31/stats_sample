@@ -1,0 +1,423 @@
+{% extends 'front.html.twig' %}
+
+{% block css %}
+	<link rel="stylesheet" href="/js/chart.js/Chart.min.css">
+{% endblock %}
+
+
+{# TITLES / STICKY BAR #}
+
+{% block title %}Mes Statistiques{% endblock %}
+{% block h1 %}<i class="fas fa-chart-line"></i> Mes Statistiques{% endblock %}
+
+	{# LEFT #}
+
+{% block titleBarLeft %}
+
+	<a 	title="Comptabilité" 
+		class="mg-btn" 
+		href="{{ path('index_accounting') }}">
+			<i class="fas fa-angle-left"></i>
+	</a>
+{% endblock %}
+
+	{# RIGHT #}
+
+{% block titleBarRight %}
+
+	{% if filters.mode == 'global' or filters.mode == 'category' %}
+		<button id="toogle-dough-display" class="mg-btn"><i class="fas fa-tv"></i></button>
+	{% endif %}
+
+	<a 	title="Catégories" 
+		class="mg-btn mg-btn-edit" 
+		href="{{ path('index_categories') }}">
+			<i class="fas fa-th-list"></i>
+	</a>
+{% endblock %}
+
+	{# SUB #}
+
+{% block subTitleBar %}
+
+	{% if filters.mode == 'global' %}
+
+		<div>{{ filters.mode }}</div>
+
+	{% elseif filters.mode == 'category' or filters.mode == 'label' %}
+
+		<div>
+			<span>
+				<button id="return-to-index" class="mg-btn"><i class="fas fa-home"></i></button>
+		
+				{% if filters.mode == 'label' %}
+					<button id="return-to-cat" class="mg-btn"><i class="fas fa-angle-left"></i></button>
+				{% endif %}
+
+				<input 
+					{% if currCategory.color is not null %}
+					value="{{ currCategory.color }}"
+					{% endif %}
+					class="cat-color ml-3" 
+					type="color" 
+					name="cat-color" 
+					data-cat="{{ currCategory.id }}"
+				>
+				<span class="mx-3">{{ currCategory.label }}</span>
+
+				{% if filters.mode == 'label' %}
+					<span class="mr-3">> {{ currLabel.label }}</span>
+				{% endif %}
+			</span>
+		</div>
+	{% endif %}
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% block content %}
+
+	{# DEBUG #}
+
+{# 	<div class="alert alert-info">
+		<ul>
+			<li>Session : {{ dump(session) }}</li>
+			<li>All : {{ dump(all) }}</li>
+			<li>Filters : {{ dump(filters) }}</li>
+			<li>Charts : {{ dump(charts) }}</li>
+		</ul>
+	</div> #}
+
+
+	{# STATS PAGE #}
+
+	{% if filters.mode == 'global' %}
+
+		<div class="mg-card mg-card-suivi">
+			<div class="mg-card-header">
+				<span>
+					<a 	title=""
+						class="mg-btn slide-toggle"
+						><i class="fas fa-caret-down"></i>
+					</a>
+					<span class="ml-2 font-weight-bold">Suivi</span>
+				</span>
+				<span>
+				</span>
+			</div>
+			<div class="mg-card-body">
+				<div class="row">
+					<div class="col-12 col-lg-6">
+						<canvas id="dailyTrace" class="mg-chart"></canvas>
+					</div>
+					{# <div class="col-12 col-lg-6">
+						<div id="statsTrace" class="mg-stats"></div>
+					</div>
+				</div>
+				<hr>
+				<div class="row">
+					<div class="col-12 col-lg-6">
+						<div id="statsBalance" class="mg-stats"></div>
+					</div> #}
+					<div class="col-12 col-lg-6">
+						<canvas id="monthlyBalance" class="mg-chart"></canvas>
+					</div>
+				</div>
+				{# <div class="mg-card-item">
+				</div> #}
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12 col-md-6">
+
+				<div class="mg-card mg-card-credit">
+					<div class="mg-card-header">
+						<span>
+							<a 	title=""
+								class="mg-btn slide-toggle"
+								><i class="fas fa-caret-down"></i>
+							</a>
+							<span class="ml-2 font-weight-bold">Revenus</span>
+						</span>
+						<span>
+						</span>
+					</div>
+					<div class="mg-card-body">
+						<div class="row">
+							<div class="col-12{#  col-md-6 #}">
+								<canvas id="creditRepartition" class="mg-chart"></canvas>
+							</div>
+							<div class="col-12{#  col-md-6 #}">
+								<div id="statsCredit" class="mg-stats"></div>
+							</div>
+						</div>
+						{# <div class="mg-card-item">
+						</div> #}
+					</div>
+				</div>
+
+			</div>
+			<div class="col-12 col-md-6">
+
+				<div class="mg-card mg-card-debit">
+					<div class="mg-card-header">
+						<span>
+							<a 	title=""
+								class="mg-btn slide-toggle"
+								><i class="fas fa-caret-down"></i>
+							</a>
+							<span class="ml-2 font-weight-bold">Dépenses</span>
+						</span>
+						<span>
+						</span>
+					</div>
+					<div class="mg-card-body">
+						<div class="row">
+							<div class="col-12{#  col-md-6 #}">
+								<div id="statsDebit" class="mg-stats"></div>
+							</div>
+							<div class="col-12{#  col-md-6 #}">
+								<canvas id="debitRepartition" class="mg-chart"></canvas>
+							</div>
+						</div>
+						{# <div class="mg-card-item">
+						</div> #}
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	{% elseif filters.mode == 'category' or filters.mode == 'label' %}
+
+		<div class="mg-card mg-card-credit">
+			<div class="mg-card-header">
+				<span>
+					<a 	title=""
+						class="mg-btn slide-toggle"
+						><i class="fas fa-caret-down"></i>
+					</a>
+					<span class="ml-2 font-weight-bold">Revenus</span>
+				</span>
+				<span>
+				</span>
+			</div>
+			<div class="mg-card-body">
+				<div class="row">
+					<div class="col-12 col-lg-6">
+						<canvas id="creditHistory" class="mg-chart"></canvas>
+					</div>
+					<div class="col-12 col-lg-6">
+						<canvas id="creditRepartition" class="mg-chart"></canvas>
+					</div>
+				</div>
+				{# <div class="mg-card-item">
+				</div> #}
+			</div>
+		</div>
+
+		<div class="mg-card mg-card-debit">
+			<div class="mg-card-header">
+				<span>
+					<a 	title=""
+						class="mg-btn slide-toggle"
+						><i class="fas fa-caret-down"></i>
+					</a>
+					<span class="ml-2 font-weight-bold">Dépenses</span>
+				</span>
+				<span>
+				</span>
+			</div>
+			<div class="mg-card-body">
+				<div class="row">
+					<div class="col-12 col-lg-6">
+						<canvas id="debitHistory" class="mg-chart"></canvas>
+					</div>
+					<div class="col-12 col-lg-6">
+						<canvas id="debitRepartition" class="mg-chart"></canvas>
+					</div>
+				</div>
+				{# <div class="mg-card-item">
+				</div> #}
+			</div>
+		</div>
+
+	{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+	{# TIMELINE #}
+
+	<div id="timeline-control">
+		<div id="period"></div>
+		<div id="control-buttons">
+			<div>
+				<button id="extend-back" class="mg-btn"><i class="fas fa-plus"></i></button>
+				<button id="curtail-back" class="mg-btn"><i class="fas fa-minus"></i></button>
+			</div>
+			<div>
+				<button id="go-back" class="mg-btn"><i class="fas fa-angle-double-left"></i></button>
+				<button id="go-forward" class="mg-btn"><i class="fas fa-angle-double-right"></i></button>
+			</div>
+			<div>
+				<button id="curtail-forward" class="mg-btn"><i class="fas fa-minus"></i></button>
+				<button id="extend-forward" class="mg-btn"><i class="fas fa-plus"></i></button>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+{# 	{% if filters.account is not null %}
+		<h2>Statistiques pour le compte {{ accFilter.accountNumber }}
+			{% if accFilter.labelAcc is not null %}
+				{{ '- ' ~ accFilter.labelAcc ~ ' '}}
+			{% endif %}
+			{% if accFilter.labelBank is not null %}
+				{{ '(' ~ accFilter.labelBank ~ ')'}}
+			{% endif %}
+		</h2>
+	{% else %}
+		<h2>Statistiques globales</h2>
+	{% endif %} #}
+	
+	{# <form method="post" id="stats-filters">
+		<div class="row">
+			<div class="form-group col-12 col-lg-6">
+				<label for="account">Compte</label>
+				<select id="account" class="form-control custom-select" name="account">
+					<option value="">-- Tous --</option>
+					{% for account in accounts %}
+						<option value="{{account.idAcc}}" 
+								{% if accFilter is not null and account.idAcc == accFilter.idAcc %}
+									{{ 'selected'}}
+								{% endif %}
+								>
+							{{ account.accountNumber }}
+							{% if account.labelAcc is not null %}
+							{{ '- ' ~ account.labelAcc ~ ' '}}
+							{% endif %}
+							({{account.count}})
+						</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="form-group col-12 col-sm-6 col-lg-3">
+				<label for="min_date">min_date</label>
+				<input id="min_date" class="form-control" type="date" name="min_date" value="{{min_date}}">
+			</div>
+			<div class="form-group col-12 col-sm-6 col-lg-3">
+				<label for="max_date">max_date</label>
+				<input id="max_date" class="form-control" type="date" name="max_date" value="{{max_date}}">
+			</div>
+		</div>
+	</form> #}
+		
+	
+
+
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+	<script src="/js/chart.js/Chart.min.js"></script>
+	<script src="/js/chart.js/Chart.bundle.min.js"></script>
+
+	<script src="/js/accounting/functions.js"></script>
+	<script src="/js/accounting/mStatsManager.js"></script>
+	<script src="/js/accounting/mChart.js"></script>
+
+	<script>
+		$(document).ready(function() {
+
+			// STATS MANAGER
+
+			var statsManager = new MStatsManager({
+				path_data: "{{ path('ajax_stats_data') }}",
+				path_session: "{{ path('ajax_stats_session') }}",
+				charts: JSON.parse('{{ charts|json_encode|raw }}'),
+				filters: JSON.parse('{{ filters|json_encode|raw }}')
+			});
+
+			statsManager.init();
+			statsManager.createCharts();
+			statsManager.configureNavigationEvents();
+			statsManager.configureTimelineEvents();
+
+			statsManager.refreshStats();
+
+			// CARD TOGGLE
+
+			$('.slide-toggle').click(function() {
+				$(this).closest('.mg-card').find('.mg-card-body').slideToggle(500);
+			});
+
+			// DOUGH DISPLAY
+
+		    $('#toogle-dough-display').click(function() {
+
+		    	$(statsManager.mCharts).each(function(i, mChart) {
+
+		    		if(mChart.type = 'doughnut') {
+
+		    			if (mChart.chart.options.circumference === Math.PI) {
+		    				mChart.chart.options.circumference = 2 * Math.PI;
+		    				mChart.chart.options.rotation = -Math.PI / 2;
+		    			} 
+		    			else {
+		    				mChart.chart.options.circumference = Math.PI;
+		    				mChart.chart.options.rotation = -Math.PI;
+		    			}
+		    			mChart.chart.update();
+		    		}
+		    	});
+		    });
+
+			
+			// FORM EVENTS
+
+			$('#stats-filters input, #stats-filters select').change(function() {
+				$('#stats-filters').trigger('submit');
+			});
+		});
+	</script>
+
+{% endblock %}

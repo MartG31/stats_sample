@@ -1,0 +1,182 @@
+
+# SECURITY
+
+registration:
+    path: /registration
+    controller: App\Controller\SecurityController::registration
+
+confirm_registration:
+    path: /confirm-registration/{token}
+    controller: App\Controller\SecurityController::confirmRegistration
+
+login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+
+logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+
+forgot_password:
+    path: /forgot-password
+    controller: App\Controller\SecurityController::forgotPassword
+
+reset_password:
+    path: /reset-password/{token}
+    controller: App\Controller\SecurityController::resetPassword
+
+profile:
+    path: /profile
+    controller: App\Controller\SecurityController::profile
+
+
+
+# FRONT 
+
+home:
+    path: /
+    controller: App\Controller\FrontController::home
+
+privacy_policy:
+    path: /privacy-policy
+    controller: App\Controller\FrontController::privacyPolicy
+
+about:
+    path: /about
+    controller: App\Controller\FrontController::about
+
+curriculum:
+    path: /curriculum
+    controller: App\Controller\FrontController::curriculum
+
+# BACK 
+
+admin:
+    path: /admin
+    controller: App\Controller\BackController::admin
+
+ajax_admin_option:
+    path: /admin/ajax-option
+    controller: App\Controller\BackController::ajaxAdminOption
+
+
+
+
+# ACCOUNTING
+
+# 
+index_accounting:
+    path: /accounting
+    controller: App\Controller\AccountingController::index
+
+upload_csv_file:
+    path: /accounting/upload-csv
+    controller: App\Controller\AccountingController::upload
+
+data_export:
+    path: /accounting/export
+    controller: App\Controller\AccountingController::export
+
+view_account:
+    path: /accounting/view-account/{id}
+    controller: App\Controller\AccountingController::viewAccount
+    requirements:
+        id: '\d+'
+
+add_account:
+    path: /accounting/add-account
+    controller: App\Controller\AccountingController::formAccount
+
+edit_account:
+    path: /accounting/edit-account/{id}
+    controller: App\Controller\AccountingController::formAccount
+    requirements:
+        id: '\d+'
+
+delete_account:
+    path: /accounting/delete-account/{id}
+    controller: App\Controller\AccountingController::deleteAccount
+    requirements:
+        id: '\d+'
+
+# 
+index_categories:
+    path: /accounting/categories
+    controller: App\Controller\AccountingController::indexCategories
+
+ajax_cat_color:
+    path: /accounting/categories/ajax-color
+    controller: App\Controller\AccountingController::ajaxCatColor
+
+add_category:
+    path: /accounting/add-category
+    controller: App\Controller\AccountingController::formCategory
+
+edit_category:
+    path: /accounting/edit-category/{id}
+    controller: App\Controller\AccountingController::formCategory
+    requirements:
+        id: '\d+'
+
+delete_category:
+    path: /accounting/delete-category/{id}
+    controller: App\Controller\AccountingController::deleteCategory
+    requirements:
+        id: '\d+'
+
+#
+add_label:
+    path: /accounting/add-label
+    controller: App\Controller\AccountingController::formLabel
+
+edit_label:
+    path: /accounting/edit-label/{id}
+    controller: App\Controller\AccountingController::formLabel
+    requirements:
+        id: '\d+'
+
+delete_label:
+    path: /accounting/delete-label/{id}
+    controller: App\Controller\AccountingController::deleteLabel
+    requirements:
+        id: '\d+'
+
+# 
+link_label:
+    path: /accounting/link-label/{id}
+    controller: App\Controller\AccountingController::linkLabel
+    requirements:
+        id: '\d+'
+
+unlink_label:
+    path: /accounting/unlink-label/{id}
+    controller: App\Controller\AccountingController::unlinkLabel
+    requirements:
+        id: '\d+'
+
+# 
+search_labels:
+    path: /accounting/search-labels
+    controller: App\Controller\AccountingController::searchLabels
+
+# 
+index_statistics:
+    path: /accounting/statistics
+    controller: App\Controller\AccountingController::indexStatistics
+
+ajax_stats_data:
+    path: /accounting/statistics/ajax-data
+    controller: App\Controller\AccountingController::ajaxStatsData
+
+ajax_stats_session:
+    path: /accounting/statistics/ajax-session
+    controller: App\Controller\AccountingController::ajaxStatsSession
+
+
+# TESTS
+
+error:
+    path: /error/{error}
+    controller: App\Controller\TestController::errorTest
+    requirements:
+        error: '\d+'
